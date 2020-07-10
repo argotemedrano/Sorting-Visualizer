@@ -1,55 +1,69 @@
-import React from 'react';
-
-export const mergeSortHelper = (array, startIndx, endIndx, animations = []) => {
-    if (array.length === 1 || array.length === 0)
+export function mergeSort(array)
+{
+    const animations = [];
+    if (array.length <= 1)
     {
         return array;
     }
 
-    if (array.length === 2)
-    {
-        if (array[0] > array[1])
-        {
-            let temp = array[1];
-            array[1] = array[0];
-            array[0] = temp;
-        }
+    const auxiliaryArray = array.slice();
+    mergeSortHelper(array, 0, array.length-1, auxiliaryArray, animations);
+    return animations;
+};
 
-        return array;
+function mergeSortHelper(mainArray, startIndx, endIndx, auxiliaryArray, animations)
+{
+    console.log("[mergeSortHelper instance] startIndx="+startIndx+" endIndx="+endIndx);
+    if (startIndx === endIndx) 
+    {
+        return;
     }
 
-    const middleIndx = Math.floor(array.length / 2);
-    const firstHalf = mergeSortHelper(array.slice(0, middleIndx), startIndx, middleIndx, []);
-    const secondHalf = mergeSortHelper(array.slice(middleIndx), middleIndx + 1, endIndx, []);
-    const sortedArray = [];
-    let i = 0;
-    let j = 0;
+    const middleIndx = Math.floor((startIndx + endIndx) / 2);
+    mergeSortHelper(auxiliaryArray, startIndx, middleIndx, mainArray, animations);
+    mergeSortHelper(auxiliaryArray, middleIndx + 1, endIndx, mainArray, animations);
+    doMerge(mainArray, startIndx, middleIndx, endIndx, auxiliaryArray, animations);
+};
 
-    while (i < firstHalf.length && j < secondHalf.length)
+function doMerge(mainArray, startIndx, middleIndx, endIndx, auxiliaryArray, animations)
+{
+    let k = startIndx;
+    let i = startIndx;
+    let j = middleIndx + 1;
+
+    while( i <= middleIndx && j <= endIndx)
     {
-        if (firstHalf[i] < secondHalf[j])
+        const animation = {};
+        animation.comparison = [i,j];
+        if (auxiliaryArray[i] <= auxiliaryArray[j])
         {
-            sortedArray.push(firstHalf[i]);
-            i++;
+            animation.swap = [k, i];
+            mainArray[k++] = auxiliaryArray[i++];
         }
         else
         {
-            sortedArray.push(secondHalf[j]);
-            j++
+            animation.swap = [k, j];
+            mainArray[k++] = auxiliaryArray[j++];
         }
+        animations.push(animation);
     }
 
-    while (i < firstHalf.length)
+    while (i <= middleIndx)
     {
-        sortedArray.push(firstHalf[i]);
-        i++;
+        animations.push({
+            comparison: [i, i],
+            swap: [k, i],
+        });
+        mainArray[k++] = auxiliaryArray[i++];
     }
-
-    while (j < secondHalf.length)
+    
+    while (j <= endIndx)
     {
-        sortedArray.push(secondHalf[j]);
-        j++;
+        animations.push({
+            comparison: [j, j],
+            swap: [k, j],
+        });
+        mainArray[k++] = auxiliaryArray[j++];
     }
-    console.log(sortedArray);
-    return sortedArray;
 };
+

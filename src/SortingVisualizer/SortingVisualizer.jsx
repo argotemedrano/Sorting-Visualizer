@@ -1,6 +1,6 @@
 import React from 'react';
 import './SortingVisualizer.css';
-import {mergeSortHelper} from './SortingAlgorithms'
+import {mergeSort} from './SortingAlgorithms'
 
 export default class SortingVisualizer extends React.Component
 {
@@ -26,7 +26,6 @@ export default class SortingVisualizer extends React.Component
         {
             array.push(randomIntFromInterval(5, 730));
         }
-        const array2 = mergeSortHelper(array, 0, array.length, []);
         this.setState({array});
     }
 
@@ -42,22 +41,34 @@ export default class SortingVisualizer extends React.Component
                         
                     </div>
             ))}</div>
-            {/* <br></br><br></br> */}
-            <button onClick={()=>this.resetArray()}>GENERATE ARRAY</button>
-            <button onClick={()=>this.mergeSort()}>MERGE SORT</button>
-            <button onClick={()=>this.quickSort()}>QUICK SORT</button>
-            <button onClick={()=>this.heapSort()}>HEAP SORT</button>
-            <button onClick={()=>this.bubbleSort()}>BUBBLE SORT</button>
-
+            <div className="menu">
+                <button onClick={()=>this.resetArray()}>GENERATE ARRAY</button>
+                <button onClick={()=>this.mergeSort()}>MERGE SORT</button>
+                <button onClick={()=>this.quickSort()}>QUICK SORT</button>
+                <button onClick={()=>this.heapSort()}>HEAP SORT</button>
+                <button onClick={()=>this.bubbleSort()}>BUBBLE SORT</button>
+            </div>
             </>
         );
     }
 
     mergeSort()
     {
-        const sortedArray = mergeSortHelper(this.state.array, 0, this.state.array.length, []);
+        const animations = mergeSort(this.state.array);
         
-        this.setState({sortedArray});
+        for (let i = 0; i < animations.length; i++)
+        {
+            const {comparison, swap} = animations[i];
+            setTimeout(() => {
+                const arrayBars = document.getElementsByClassName("array-bar");
+                arrayBars[comparison[1]].style.backgroundColor = "red";
+                arrayBars[comparison[0]].style.backgroundColor = "red";
+                setTimeout(() => {
+                    arrayBars[comparison[1]].style.backgroundColor = "turqouise";
+                    arrayBars[comparison[0]].style.backgroundColor = "turqouise";
+                }, (i + 1) * 10);
+            }, i * 10);
+        }
     }
 
 
